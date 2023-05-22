@@ -1,0 +1,147 @@
+local module = {}
+local Plr = game:GetService("Players").LocalPlayer
+local Player = game:GetService("Players").LocalPlayer
+local rs = game:GetService("RunService")
+
+local Character = Player.Character
+local hum = Character:FindFirstChildOfClass("Humanoid")
+function module:AlignBodyPart(rot:Vector3,pos:Vector3,alignPart:Instance,PosAlignPart:Instance)
+	if not rot then rot = Vector3.new(100,100,10) end
+	if not pos then pos = Vector3.new(-1.5,1,-1.5) end
+	if not PosAlignPart then PosAlignPart = Character:FindFirstChild("Torso") end
+	if not alignPart then alignPart = Character:FindFirstChild("Left Arm") end
+	local at
+
+	local function align(i,v) -- align function
+		local att0 = Instance.new("Attachment", i)
+		att0.Position = Vector3.new(0,0,0)
+		local att1 = Instance.new("Attachment", v)
+		att1.Position = pos--position
+		att1.Rotation = rot--rotation
+		at = att1
+		local AP = Instance.new("AlignPosition", i)
+		AP.Attachment0 = att0
+		AP.Attachment1 = att1
+		AP.RigidityEnabled = false
+		AP.ReactionForceEnabled = false
+		AP.ApplyAtCenterOfMass = true
+		AP.MaxForce = 9999999
+		AP.MaxVelocity = math.huge
+		AP.Responsiveness = 1000000000000
+		local AO = Instance.new("AlignOrientation", i)
+		AO.Attachment0 = att0
+		AO.Attachment1 = att1
+		AO.ReactionTorqueEnabled = true
+		AO.PrimaryAxisOnly = false
+		AO.MaxTorque = 9999999
+		AO.MaxAngularVelocity = math.huge
+		AO.Responsiveness = 10000000000000
+	end
+
+	if hum.RigType == Enum.HumanoidRigType.R6 then
+		alignPart:BreakJoints()
+		align(alignPart,PosAlignPart)
+	end
+	return at
+end
+function module:AlignAccessory(pos:Vector3,rot:Vector3,AccessoryInstance:Accessory,alignTo:Instance)
+	if not AccessoryInstance then error("Invalid Accessory. it doesnt exist.") end
+	local handle = AccessoryInstance:FindFirstChild("Handle")
+	local conn
+	local att
+	if hum.RigType == Enum.HumanoidRigType.R15 then
+		error("You must use R6 instead of R15!")
+	end
+	if not rot then rot = Vector3.new(50,10,50) end
+	if not pos then pos = Vector3.new(0,-3.5,0) end
+	if not alignTo then alignTo = Character:FindFirstChild("Torso") end
+	if handle:FindFirstChild("AccessoryWeld") then
+		handle:FindFirstChild("AccessoryWeld"):Remove()
+	end
+	if handle:FindFirstChild("Mesh") then
+		handle:FindFirstChild("Mesh"):Remove()
+	end
+	if handle:FindFirstChild("SpecialMesh") then
+		handle:FindFirstChild("SpecialMesh"):Remove()
+	end
+
+	local function align(i,v)
+		local att0 = Instance.new("Attachment", i)
+		att0.Position = Vector3.new(0,0,0)
+		local att1 = Instance.new("Attachment", v)
+		att1.Position = pos-- literally the same thing
+		att = att1
+		conn = rs.Heartbeat:Connect(function()
+			att1.Rotation = att1.Rotation + rot--rotation
+		end)
+		local AP = Instance.new("AlignPosition", i)
+		AP.Attachment0 = att0
+		AP.Attachment1 = att1
+		AP.RigidityEnabled = false
+		AP.ReactionForceEnabled = false
+		AP.ApplyAtCenterOfMass = true
+		AP.MaxForce = 9999999
+		AP.MaxVelocity = math.huge
+		AP.Responsiveness = 1000000000000
+		local AO = Instance.new("AlignOrientation", i)
+		AO.Attachment0 = att0
+		AO.Attachment1 = att1
+		AO.ReactionTorqueEnabled = true
+		AO.PrimaryAxisOnly = false
+		AO.MaxTorque = 9999999
+		AO.MaxAngularVelocity = math.huge
+		AO.Responsiveness = 10000000000000
+	end
+	align(handle, alignTo)
+	return att,conn
+
+
+end
+function module:AlignAccessoryWithMesh(pos:Vector3,rot:Vector3,AccessoryInstance:Accessory,alignTo:Instance)
+	if not AccessoryInstance then error("Invalid Accessory. it doesnt exist.") end
+	local handle = AccessoryInstance:FindFirstChild("Handle")
+	local conn
+	local att
+	if hum.RigType == Enum.HumanoidRigType.R15 then
+		error("You must use R6 instead of R15!")
+	end
+	if not rot then rot = Vector3.new(50,10,50) end
+	if not pos then pos = Vector3.new(0,-3.5,0) end
+	if not alignTo then alignTo = Character:FindFirstChild("Torso") end
+	if handle:FindFirstChild("AccessoryWeld") then
+		handle:FindFirstChild("AccessoryWeld"):Remove()
+	end
+	local function align(i,v)
+		local att0 = Instance.new("Attachment", i)
+		att0.Position = Vector3.new(0,0,0)
+		local att1 = Instance.new("Attachment", v)
+		att1.Position = pos-- literally the same thing
+		att = att1
+		conn = rs.Heartbeat:Connect(function()
+			att1.Rotation = att1.Rotation + rot--rotation
+		end)
+		local AP = Instance.new("AlignPosition", i)
+		AP.Attachment0 = att0
+		AP.Attachment1 = att1
+		AP.RigidityEnabled = false
+		AP.ReactionForceEnabled = false
+		AP.ApplyAtCenterOfMass = true
+		AP.MaxForce = 9999999
+		AP.MaxVelocity = math.huge
+		AP.Responsiveness = 1000000000000
+		local AO = Instance.new("AlignOrientation", i)
+		AO.Attachment0 = att0
+		AO.Attachment1 = att1
+		AO.ReactionTorqueEnabled = true
+		AO.PrimaryAxisOnly = false
+		AO.MaxTorque = 9999999
+		AO.MaxAngularVelocity = math.huge
+		AO.Responsiveness = 10000000000000
+	end
+	align(handle, alignTo)
+	return att,conn
+
+
+end
+
+return module
